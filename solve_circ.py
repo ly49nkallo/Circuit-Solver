@@ -8,16 +8,16 @@ from fractions import Fraction
 '''
 Circuit Formalism
 Ex. 
-
-Series(
-    Source(V=9),
-    Parellel(  
-        Resistor('R1', R=1, I=0.5),
-        Resistor('R2, V=2),               
-    ),
-    Resistor('R3'),
-    Resistor('R4'),
-)
+myCircuit = Circuit(
+        Series(
+            Resistor('R1', R=4),
+            Parellel(
+                Resistor('R2', R=4),
+                Resistor('R3', R=4),
+            ),
+            V = 12
+        )
+    )
 
 
 Importantly, Circuit, Parellel, and Resistors inherit from a base class that tracks a resistance, current, and voltage
