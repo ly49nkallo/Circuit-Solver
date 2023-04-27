@@ -130,9 +130,9 @@ class Circuit(Module):
             print("!"*10 + "FAILED TO SOLVE CIRCUIT" + "!"*10)
             print("="*10 + "PARTIALLY SOLVED CIRCUIT" + "="*10)
             print(self)
-        
-        print("="*10 + "SOLVED CIRCUIT" + "="*10)
-        print(self)
+        else:
+            print("="*10 + "SOLVED CIRCUIT" + "="*10)
+            print(self)
         print()
         print("Elapsed time:", round(time.time() - stime,5))
 
@@ -222,72 +222,38 @@ class Parellel(Module):
 
 
 def main():
-    print('EXAMPLES FROM WORKSHEET')
-    print('EXAMPLE 1')
-    c1 = Circuit(
+    c3 = Circuit(
         Series(
-            Resistor('R1', R=3),
-            Resistor('R2', R=3),
-            Resistor('R2', R=3),
-            V=9,
-        ),
-    )
-    c1.solve()
-    print()
-    print('EXAMPLE 2')
-    c2 = Circuit(
-        Parellel(
-            Resistor('R1', R=12),
-            Resistor('R2', R=12),
-            Resistor('R3', R=12),
-            V=6
+            Resistor('R1', R=2),
+            Resistor('R2', R=4),
+            Resistor('R3', R=6),
+            V=12
         )
     )
-    c2.solve()
-    print()
-    print('EXAMPLE 5')
+    c3.solve()
+    c4 = Circuit(
+        Parellel(
+            Resistor('R1', R=2),
+            Resistor('R2', R=3),
+            Resistor('R3', R=6),
+            V=12
+        )
+    )
+    c4.solve()
     c5 = Circuit(
         Series(
-            Resistor('R1', R=4),
             Parellel(
-                Resistor('R2', R=4),
-                Resistor('R3', R=4),
+                Series(Resistor('R1', I=2), Resistor('R2', R=5)),
+                Resistor('R3', V=3.5)
             ),
-            V = 12
+            Parellel(
+                Resistor('R4', V=4), Resistor('R5', I=1)
+            ),
+            Resistor('R6', R=2),
+            I=2
         )
     )
     c5.solve()
-
-    print()
-    print('EXAMPLE 10')
-    c10 = Circuit(
-        Parellel(
-            Series(
-                Resistor('R1', R=1),
-                Parellel(
-                    Series(
-                        Resistor('R2', R=3),
-                        Resistor('R3', R=5)
-                    ),
-                    Parellel(
-                        Resistor('R4', R=2),
-                        Resistor('R5', R=4)
-                    )
-                ),
-                Resistor('R6', R=3)
-            ),
-            Series(
-                Parellel(
-                    Resistor('R7', R=5),
-                    Resistor('R8', R=5),
-                    Resistor('R9', R=10)
-                ),
-                Resistor('R10', R=7)
-            ),
-            V=18
-        ),
-    )
-    c10.solve()
 
 if __name__ == '__main__':
     main()
