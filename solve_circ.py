@@ -103,7 +103,7 @@ class Resistor(Module):
         return super().solve()
 
 class Circuit(Module):
-    def __init__(self, *args, max_iter:int = 10) -> None:
+    def __init__(self, *args, max_iter:int = 50) -> None:
         assert isinstance(max_iter, int)
         assert len(args) == 1, f'Circuit only accepts one module as input, recieved {len(args)} instead.'
         self.max_iter = max_iter
@@ -157,6 +157,13 @@ class Series(Module):
             self.R = sum([c.R for c in self.children])
             print(f"Series: Set R = {Fraction(self.R).limit_denominator(200)} from property of Series (R = R_1 + R_2 + ... + R_N)")
 
+        # One unknown child
+        if sum([int(i.R is None) for i in self.children]) == 1 and self.R is not None:
+            for c in self.children:
+                if c.R is not None: continue
+                c.R = self.R - sum([i.R for i in self.children if i.R is not None])
+                print(f"{c.m_type}: Set R = {Fraction(c.R).limit_denominator(200)} from property of Series (R = R_1 + R_2 + ... + R_N)")
+
         '''I = I_1 = I_2'''
         if any([c.I is not None for c in self.children]) and self.I is None:
             self.I = [c.I for c in self.children if c.I is not None][0]
@@ -176,6 +183,13 @@ class Series(Module):
             self.V = sum([c.V for c in self.children])
             print(f"Series: Set V = {Fraction(self.V).limit_denominator(200)} from property of Series (V = V_1 + V_2 + ... + V_N)")
 
+        # One unknown child
+        if sum([int(i.V is None) for i in self.children]) == 1 and self.V is not None:
+            for c in self.children:
+                if c.V is not None: continue
+                c.V = self.V - sum([i.V for i in self.children if i.V is not None])
+                print(f"{c.m_type}: Set V = {Fraction(c.V).limit_denominator(200)} from property of Series (V = V_1 + V_2 + ... + V_N)")
+        
         super().solve()
 
 
@@ -199,6 +213,19 @@ class Parellel(Module):
             self.R = 1/sum([1/c.R for c in self.children])
             print(f"Parellel: Set R = {Fraction(self.R).limit_denominator(200)} from property of Parellel (1/R = 1/R_1 + 1/R_2 + ... + 1/R_N)")
 
+        # One unknown child
+        if sum([int(i.R is None) for i in self.children]) == 1 and self.R is not None:
+            for c in self.children:
+                if c.R is not None: continue
+                print((1/self.R) - sum([1/i.R for i in self.children if i.R is not None]))
+                print((1/self.R))
+                print(sum([1/i.R for i in self.children if i.R is not None]))
+                print(self.R)
+                print([i.R for i in self.children if i.R is not None])
+                print(c)
+                c.R = 1/((1/self.R) - sum([1/i.R for i in self.children if i.R is not None]))
+                print(f"{c.m_type}: Set R = {Fraction(c.R).limit_denominator(200)} from property of Parellel (1/R = 1/R_1 + 1/R_2 + ... + 1/R_N)")
+
         '''V = V_1 = V_2'''
         if any([c.V is not None for c in self.children]) and self.V is None:
             self.V = [c.V for c in self.children if c.V is not None][0]
@@ -217,7 +244,14 @@ class Parellel(Module):
         if all([c.I is not None for c in self.children]) and self.I is None:
             self.I = sum([c.I for c in self.children])
             print(f"Parellel: Set I = {Fraction(self.I).limit_denominator(200)} from property of Parellel (I = I_1 + I_2 + ... + I_N)")
-            
+        
+        # One unknown child
+        if sum([int(i.I is None) for i in self.children]) == 1 and self.I is not None:
+            for c in self.children:
+                if c.I is not None: continue
+                c.I = self.I - sum([i.I for i in self.children if i.I is not None])
+                print(f"{c.m_type}: Set I = {Fraction(c.I).limit_denominator(200)} from property of Parellel (I = I_1 + I_2 + ... + I_N)")
+        
         super().solve()
 
 
@@ -243,8 +277,8 @@ def main():
     c5 = Circuit(
         Series(
             Parellel(
-                Series(Resistor('R1', I=2), Resistor('R2', R=5)),
-                Resistor('R3', V=3.5)
+                Series(Resistor('R1', R=5), Resistor('R2', V=3.5)),
+                Resistor('R3', I=1.5)
             ),
             Parellel(
                 Resistor('R4', V=4), Resistor('R5', I=1)
